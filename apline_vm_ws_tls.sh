@@ -20,9 +20,9 @@ if [[ -f "/root/Xray/xray" ]]; then
 else
     echo "正在获取xray最新版本号..."
     last_version=$(curl -s https://api.github.com/repos/XTLS/Xray-core/releases?include_prereleases=true | sed -n 29p | tr -d ',"' | awk '{print $2}')
-    yellow "xray最新版本号为： $last_version"
+    yellow "xray最新版本号为： ${latest_tag}"
     echo "开始下载xray文件..."
-    wget https://github.com/XTLS/Xray-core/releases/download/$last_version/Xray-linux-64.zip
+    wget https://github.com/XTLS/Xray-core/releases/download/${latest_tag}/Xray-linux-64.zip
     cd /root
     mkdir ./Xray
     unzip -d /root/Xray Xray-linux-64.zip
