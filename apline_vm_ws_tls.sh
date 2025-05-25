@@ -10,25 +10,39 @@ red() {
 green() {
     echo -e "\033[32m\033[01m$1\033[0m"
 }
+
 yellow() {
     echo -e "\033[33m\033[01m$1\033[0m"
 }
-
 
 if [[ -f "/root/Xray/xray" ]]; then
     green "xray文件已存在！"
 else
     echo "正在获取xray最新版本号..."
-    last_version=$(curl -s https://api.github.com/repos/XTLS/Xray-core/releases?include_prereleases=true | sed -n 29p | tr -d ',"' | awk '{print $2}')
+
+    # 修改点①：使用可靠方式获取最新版本号
+    latest_tag=$(curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest | grep '"tag_name":' | cut -d '"' -f4)
+
+    # 修改点②：判断获取是否成功
+    if [[ -z "$latest_tag" ]]; then
+        red "获取版本号失败！请检查网络连接或GitHub API访问情况。"
+        exit 1
+    fi
+
+    # 修改点③：统一变量名，修复打印和下载部分
     yellow "xray最新版本号为： ${latest_tag}"
     echo "开始下载xray文件..."
     wget https://github.com/XTLS/Xray-core/releases/download/${latest_tag}/Xray-linux-64.zip
+
+    # 解压和处理
     cd /root
-    mkdir ./Xray
+    mkdir -p ./Xray
     unzip -d /root/Xray Xray-linux-64.zip
     rm Xray-linux-64.zip
     cd /root/Xray
+
     if [[ -f "xray" ]]; then
+        chmod +x xray
         green "下载成功！"
     else
         red "下载失败！"
