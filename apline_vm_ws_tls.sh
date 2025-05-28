@@ -88,6 +88,10 @@ until $sign; do
 done
 green "nat内部端口配置完成！"
 
+
+read -p "是否为NAT环境？1.是 2.否（默认2）：" is_nat
+[[ -z $is_nat ]] && is_nat=2
+if [[ $is_nat == 1 ]]; then
 yellow "开始进行端口映射..."
 read -p "服务商已提供映射或可通过操作面板完成映射？1.是；2.否; other.退出(默认为2)：" map
 [[ -z $map ]] && map=2
@@ -135,6 +139,8 @@ else
     exit 1
 fi
 green "已完成端口映射！"
+fi
+
 
 yellow "开始配置证书..."
 
@@ -238,30 +244,23 @@ cat << EOF > /root/Xray/config.json
                 }
             },
             "tlsSettings": {
-                "allowInsecure": false,
-                "alpn": [
-                    ""
-                ],
-                "certificates": [
-                    {
-                        "ocspStapling": 3600,
-                        "certificateFile": "$cert",
-                        "keyFile": "$key",
-                        "certificate": [
-                            ""
-                        ],
-                        "key": [
-                            ""
-                        ]
-                    }
-                ],
-                "cipherSuites": "",
-                "fingerprint": "random",
-                "maxVersion": "1.3",
-                "minVersion": "1.0",
-                "rejectUnknownSni": false,
-                "serverName": "$domain"
-            }
+    "allowInsecure": false,
+    "alpn": [ "http/1.1" ],
+    "certificates": [
+        {
+            "ocspStapling": 3600,
+            "certificateFile": "$cert",
+            "keyFile": "$key"
+        }
+    ],
+    "cipherSuites": "",
+    "fingerprint": "random",
+    "maxVersion": "1.3",
+    "minVersion": "1.0",
+    "rejectUnknownSni": false,
+    "serverName": "$domain"
+}
+
         }
     }],
     "outbounds": [
